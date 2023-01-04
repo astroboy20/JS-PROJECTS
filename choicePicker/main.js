@@ -1,22 +1,75 @@
-const loadText = document.querySelector('.loading-text')
-const bg = document.querySelector('.bg')
+const tagsEl = document.getElementById('tags')
+const textarea = document.getElementById('textarea')
 
-let load = 0
-let init =setInterval(blurring,30)
+textarea.focus()
 
-function blurring(){
-    load++
+textarea.addEventListener('keyup',(e)=>{
+    createTags(e.target.value)
 
-    if(load > 99){
-        clearInterval(init)
+    if (e.key ==='Enter'){
+        setTimeout(()=>{
+            e.target.value = ''
+        },10)
+        randonSelect()
     }
+})
 
-    loadText.innerText = `${load}%`
-    loadText.style.opacity = scale(load, 0 , 100, 1, 0)
-    // bg.style.filter = `blur{${scale(load, 0, 100, 30, 0)}}`
-    bg.style.filter =`blur(${scale(load, 0 , 100, 30, 0)}px)`
+
+
+const createTags =(input)=>{
+    const tags = input.split(',')
+    .filter(tag => tag.trim() !=='')
+    .map(tag=>tag.trim())
+
+    tagsEl.innerHTML = ''
+
+    tags.forEach(tag=>{
+        const tagEl = document.createElement('span')
+        tagEl.classList.add('tag')
+        tagEl.innerText =tag
+        tagsEl.appendChild(tagEl)
+    })
 }
 
-const scale = (num, in_min, in_max, out_min, out_max) =>{
-    return (num-in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+
+
+function randonSelect() {
+    const times = 30
+
+    const interval = setInterval(() => {
+
+        const randomTag = pickRandonTag()
+
+        highlightTag(randomTag)
+
+        setTimeout(() => {
+            unHghlightTag(randomTag)
+        }, 100)
+    }, 100)
+
+    setTimeout(() => {
+        clearInterval(interval)
+        setTimeout(() => {
+            const randomTag = pickRandonTag()
+            highlightTag(randomTag)
+        }, 100);
+    }, times * 30);
+
 }
+
+function pickRandonTag() {
+    const tags = document.querySelectorAll('.tag')
+    
+    return tags [Math.floor(Math.random() * tags.length)]
+
+
+}
+
+function highlightTag(tag) {
+    tag.classList.add('highlight')
+}
+function unHghlightTag(tag) {
+    tag.classList.remove('highlight')
+}
+
